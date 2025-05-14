@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effisched</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/validation.js') }}" defer></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/calender.js') }}" defer></script>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="wrapper">
+
+            <nav>
+                <div class="left">
+                    <a href="/">
+                        <i class="fa-solid fa-list-ol"></i>
+                        Effisched
+                    </a>
+                </div>
+            </nav>
+
+            <h1>Sign-up</h1>
+            <p id="error-message"></p>
+            <form id="form">
+                <!--username-->
+                <div>
+                    <label for="username-input">
+                        <i class="fa-solid fa-user"></i>
+                    </label>
+                    <input type="text" name="username" id="username-input" placeholder="Username">
+                </div>
+
+                <!--Email-->
+                <div>
+                    <label for="email-input">
+                        <i class="fa-solid fa-envelope"></i>
+                    </label>
+                    <input type="email" name="email" id="email-input" placeholder="Email">
+                </div>
+
+                <!--Password-->
+                <div>
+                    <label for="password-input">
+                        <i class="fa-solid fa-lock"></i>
+                    </label>
+                    <input type="password" name="password" id="password-input" placeholder="Password">
+                </div>
+
+                <!--repeat password-->
+                <div>
+                    <label for="repeat-password-input">
+                        <i class="fa-solid fa-unlock-keyhole"></i>
+                    </label>
+                    <input type="password" name="repeat-password" id="repeat-password-input" placeholder="Repeat Password">
+                </div>
+
+                <button type="submit">Sign-up</button>
+            </form>
+
+            <p>
+                Are you already a member...
+                <a href="login.html">
+                    Login
+                </a>
+            </p>
+            <nav>
+                <div class="down">
+                    <a href="https://google.com" target="blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-google"></i>
+                    </a>
+
+                    <a href="http://whatsapp.com" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+        
+                    <a href="mailto:Anujlingwal022@gmail.com">
+                        <i class="fa-solid fa-envelope"></i>
+                    </a>
+                </div>
+                
+            </nav>
+        </div>
+    </div>
+</body>
+</html>
