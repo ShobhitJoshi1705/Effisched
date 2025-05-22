@@ -15,6 +15,8 @@ const calendar = document.querySelector(".calendar"),
   addEventTitle = document.querySelector(".event-name "),
   addEventFrom = document.querySelector(".event-time-from "),
   addEventTo = document.querySelector(".event-time-to "),
+  // addEventDeadline = document.querySelector(".event-deadline"),
+  // addEventDuration = document.querySelector(".event-duration"),
   addEventSubmit = document.querySelector(".add-event-btn ");
 
 let today = new Date();
@@ -36,7 +38,6 @@ const months = [
   "November",
   "December",
 ];
-
 
 const eventsArr = [];
 getEvents();
@@ -293,11 +294,20 @@ addEventTo.addEventListener("input", (e) => {
   }
 });
 
+// addDeadline.addEventListener("input", (e) => {
+//   addEventDeadline = addEventDeadline.value.trim()
+// });
+// addDuration.addEventListener("input", (e) => {
+//   addEventDuration = addEventDuration.value.trim()
+// });
+
 //function to add event to eventsArr
 addEventSubmit.addEventListener("click", () => {
   const eventTitle = addEventTitle.value;
   const eventTimeFrom = addEventFrom.value;
   const eventTimeTo = addEventTo.value;
+  // const eventDeadline = addDeadline.value;
+  // const eventDuration = addDuration.value;
   if (eventTitle === "" || eventTimeFrom === "" || eventTimeTo === "") {
     alert("Please fill all the fields");
     return;
@@ -343,6 +353,7 @@ addEventSubmit.addEventListener("click", () => {
   const newEvent = {
     title: eventTitle,
     time: timeFrom + " - " + timeTo,
+    priority: null
   };
   console.log(newEvent);
   console.log(activeDay);
@@ -413,12 +424,37 @@ eventsContainer.addEventListener("click", (e) => {
     }
   }
 });
+// data backend me send karne ke liye
+function sendData() {
+  fetch(
+    "/save-events", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ events: eventsArr })
+  }
+  ).then(response => response.json())
+    .then(data => {
+      console.log("Server Response", data)
+    })
+    .catch(error => console.error("Error", error));
 
-//function to save events in local storage
-function saveEvents() {
-  localStorage.setItem("events", JSON.stringify(eventsArr));
+}
+function getEventswithpriority() {
+  fetch('/get-events')
+    .then(response => response.json())
+    .then(data => {
+      eventsArr.push(...data);
+    })
+    .catch(error => console.error("Error fetching events:", error));
 }
 
+function saveEvents() {
+  localStorage.setItem("events", JSON.stringify(eventsArr));
+  sendData();
+
+}
 //function to get events from local storage
 function getEvents() {
   //check if events are already saved in local storage then return event else nothing
@@ -426,6 +462,7 @@ function getEvents() {
     return;
   }
   eventsArr.push(...JSON.parse(localStorage.getItem("events")));
+  getEventswithpriority();
 }
 
 function convertTime(time) {
