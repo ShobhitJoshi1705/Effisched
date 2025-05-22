@@ -295,6 +295,7 @@ addEventTo.addEventListener("input", (e) => {
 
 //function to add event to eventsArr
 addEventSubmit.addEventListener("click", () => {
+  
   const eventTitle = addEventTitle.value;
   const eventTimeFrom = addEventFrom.value;
   const eventTimeTo = addEventTo.value;
@@ -368,6 +369,28 @@ addEventSubmit.addEventListener("click", () => {
       events: [newEvent],
     });
   }
+  // Add this after updating the eventsArr but before resetting the form inputs
+fetch('/add_event', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: eventTitle,
+    time: timeFrom + " - " + timeTo,
+    day: activeDay,
+    month: month + 1,
+    year: year
+  })
+})
+.then(response => response.json())
+.then(data => {
+  console.log("Event saved to server:", data);
+})
+.catch(error => {
+  console.error("Error saving event:", error);
+});
+
 
   console.log(eventsArr);
   addEventWrapper.classList.remove("active");
