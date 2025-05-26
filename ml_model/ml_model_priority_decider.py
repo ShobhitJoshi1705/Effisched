@@ -11,7 +11,8 @@ from sklearn.linear_model import Ridge
 from sklearn import metrics
 
 # Set current time
-CURRENT_TIME = datetime(2025, 5, 18, 8, 0)
+CURRENT_TIME = datetime.now()
+
 
 # Load dataset
 df = pd.read_csv("flexible_tasks_dataset.csv")
@@ -40,8 +41,6 @@ base_models = [
 
 # Meta-model
 meta_model = Ridge(alpha=1.0)
-
-
 
 # Stacking Regressor
 stacked_model = StackingRegressor(

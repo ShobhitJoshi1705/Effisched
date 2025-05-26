@@ -102,7 +102,7 @@ function initCalendar() {
   addListner();
 }
 
-//function to add month and year on prev and next button
+//func to add month and year on prev and next button
 function prevMonth() {
   month--;
   if (month < 0) {
@@ -213,7 +213,7 @@ function gotoDate() {
   alert("Invalid Date");
 }
 
-//function get active day day name and date and update eventday eventdate
+//func get active day day name and date and update eventday eventdate
 function getActiveDay(date) {
   const day = new Date(year, month, date);
   const dayName = day.toString().split(" ")[0];
@@ -221,17 +221,17 @@ function getActiveDay(date) {
   eventDate.innerHTML = date + " " + months[month] + " " + year;
 }
 
-//function update events when a day is active
+//func updat events when a day is active
 function updateEvents(date) {
   let events = "";
   eventsArr.forEach((event) => {
     if (
       date === event.day &&
       month + 1 === event.month &&
-      year === event.year
-    ) {
+      year === event.year) {
       event.events.forEach((event) => {
         events += `<div class="event">
+        <style></style>
             <div class="title">
               <i class="fas fa-circle"></i>
               <h3 class="event-title">${event.title}</h3>
@@ -252,7 +252,7 @@ function updateEvents(date) {
   saveEvents();
 }
 
-//function to add event
+//func to ad event
 addEventBtn.addEventListener("click", () => {
   addEventWrapper.classList.toggle("active");
 });
@@ -453,7 +453,6 @@ function getEventswithpriority() {
 function saveEvents() {
   localStorage.setItem("events", JSON.stringify(eventsArr));
   sendData();
-
 }
 //function to get events from local storage
 function getEvents() {

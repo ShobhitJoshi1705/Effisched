@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS                                      
-import pickle as pkl
-import pandas as pd
+from ml_model.priority_decider_and_time_allocator import Event
+import sqlalchemy
 app=Flask(__name__)
 CORS(app)
-Events=[]                                                                      
+EventsList=[]                                                                      
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -28,31 +28,24 @@ def addEvent():
     data = request.get_json()
     print("Received event:", data)
     events_list = data.get('events', [])
-    Events.extend(events_list)
+    # unique_events=[dict(t) for t in {tuple(event.items()) for event in events_list}]
+    EventsList=data.get('events',[])
+    # ob=Event(EventsList)
+    # for event in EventsList:
+    #     if event["priority"]==None:
+    #         event["priority"]=find_Priority(event)
+    
     return jsonify({
         "status": "success",
         "message": f"Received {len(events_list)} events",
-        "total_stored": len(Events)
+        "total_stored": len(EventsList)
     }), 200
-def getPriority(duration,deadline):
-    with open('ml_model\\priority_model.pkl','rb') as priority_model:
-        model= pkl.load(priority_model)
-    priority=model.predict([duration,deadline])
-    return priority
-
-def findPriority():
-    for event in Events['events']:
-        duration = event['duration']
-        deadline = event['deadline']
-        priority=getPriority(duration=duration,deadline=deadline)
-        event['priority']=priority   
 
 @app.route('/get-events',methods=['GET'])
-def getEvents():
-    # findPriority()
-    for event in Events:
+def getEventsList():
+    for event in EventsList:
         print(event)
-    return jsonify(Events)
+    return jsonify(EventsList)
 
 if __name__=='__main__':
     app.run(debug=True)

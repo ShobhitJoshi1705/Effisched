@@ -378,7 +378,7 @@ body {
 }
 
 .add-event-wrapper {
-  max-height: 0;
+  max-height: 500;
   position: absolute;
   bottom: 100px;
   left: 50%;
