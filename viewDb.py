@@ -1,7 +1,19 @@
 # inspect_both_dbs.py
 import sqlite3
 import pandas as pd
-
+CREATE_SQL = '''
+CREATE TABLE IF NOT EXISTS events (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    type       TEXT,
+    title      TEXT,
+    deadline   INTEGER,
+    duration   INTEGER,
+    day        INTEGER,
+    month      INTEGER,
+    year       INTEGER,
+    priority   INTEGER
+)
+'''
 # your CREATE statement, once
 def get_db_connection():
     conn = sqlite3.connect('flexibleevents.db')
@@ -79,5 +91,7 @@ def remove_event(condition=None):
 
 if __name__ == "__main__":
     insert_test_row()              # write one test row into flexibleevents.db
-    inspect_db('events.db')        # dump fixed‑events DB
+    inspect_db('events.db')# dump fixed‑events DB
     inspect_db('flexibleevents.db')# dump flexible‑events DB
+    remove_event(id==5)
+    
