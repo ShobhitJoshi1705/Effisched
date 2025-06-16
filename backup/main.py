@@ -4,124 +4,31 @@ import pickle
 import pandas as pd
 from datetime import datetime
 import sqlite3
-CREATE_SQL = '''
-CREATE TABLE IF NOT EXISTS events (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    type       TEXT,
-    title      TEXT,
-    deadline   INTEGER,
-    duration   INTEGER,
-    day        INTEGER,
-    month      INTEGER,
-    year       INTEGER,
-    priority   INTEGER
-)
-'''
+
 app = Flask(__name__)
 CORS(app)
 
-def get_db_connection():
-    conn = sqlite3.connect('flexibleevents.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-with get_db_connection() as con:
-    con.execute('''
+conection=sqlite3.connect('events.db')
+cursor = conection.cursor()
+
+cursor.execute('''
 CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT,
     title TEXT,
-    deadline INTEGER,
-    duration INTEGER,
+    timeFrom TEXT,
+    timeTo TEXT,
     day INTEGER,
     month INTEGER,
     year INTEGER,
-    priority INTEGER
+    priority TEXT
 )
 ''')
-# Load model
+# Load the priority model
 with open("ml_model\\priority_model.pkl", "rb") as f:
     priority_model = pickle.load(f)
 
 EventsList=[]
-def loadEventsFromDatabase():
-    print('\nloading Events from db...\n')
-    con=get_db_connection()
-    cur=con.cursor()
-    cur.execute('SELECT type, title, deadline, duration, day, month, year, priority FROM events')
-    rows = cur.fetchall()
-    for row in rows:
-        event = {
-            'type': row[0],
-            'title': row[1],
-            'deadline': row[2],
-            'duration': row[3],
-            'day': row[4],
-            'month': row[5],
-            'year': row[6],
-            'priority': row[7]
-        }
-        print(event)
-        if event not in EventsList:
-            EventsList.append(event)
-        print("Events after loading db :",EventsList)
-        con.close()
-            
-def savetoDatabase(new_event):
-    # Check if the event already exists
-    con=get_db_connection()
-    cur=con.cursor()
-    cur.execute('''
-        SELECT * FROM events WHERE
-        type = ? AND title = ? AND deadline = ? AND duration = ? AND
-        day = ? AND month = ? AND year = ? AND priority = ?
-    ''', (
-        new_event['type'],
-        new_event['title'],
-        new_event['deadline'],
-        new_event['duration'],
-        new_event['day'],
-        new_event['month'],
-        new_event['year'],
-        new_event['priority']
-    ))
-    
-
-    if cur.fetchone():
-        return False
-
-    cur.execute('''
-        INSERT INTO events (type, title, deadline, duration, day, month, year, priority)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (
-        new_event['type'],
-        new_event['title'],
-        new_event['deadline'],
-        new_event['duration'],
-        new_event['day'],
-        new_event['month'],
-        new_event['year'],
-        new_event['priority']
-    ))
-    con.commit()
-    con.close()
-    return True
-def remove_event(condition=None):
-    try:
-        con = get_db_connection()
-        cur = con.cursor()
-
-        if condition:
-            query = f"DELETE FROM events WHERE {condition}"
-        else:
-            query = "DELETE FROM events"
-
-        cur.execute(query)
-        con.commit()
-        print("Deletion successful.")
-    except Exception as e:
-        print(f"Error deleting data: {e}")
-    finally:
-        con.close()
 
 @app.route('/')
 def home():
@@ -202,7 +109,6 @@ def add_event():
         print("EventsList :",EventsList)
         if event not in EventsList:
             EventsList.append(event)
-            savetoDatabase(event)
             print("apend successful")
             print("EventsList AFTER APPEND :",EventsList)
         else:
@@ -215,11 +121,27 @@ def add_event():
 
 @app.route('/get-events', methods=['GET'])
 def get_events():
-    if loadEventsFromDatabase():
-        print("\nevents loaded\n")
-        print("Events in backend:",EventsList)
+    print("Events in backend:",EventsList)
     return jsonify(EventsList)
 
+def savetoDatabase(new_event):
+    cursor.execute('''
+        INSERT INTO events (type, title, timeFrom, timeTo, day, month, year, priority)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+    new_event['type'],
+    new_event['title'],
+    new_event['timeFrom'],
+    new_event['timeTo'],
+    new_event['day'],
+    new_event['month'],
+    new_event['year'],
+    new_event['priority']
+    ))
+    conection.commit()
+    return True
+
+    
 # @app.route('/save-events', methods=['POST'])
 # def add_events():
 #     data = request.get_json()

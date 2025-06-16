@@ -6,7 +6,7 @@ from datetime import datetime
 CURRENT_TIME = datetime.now()
 
 # Load the ML model pipeline
-with open("ml_model\\priority_model.pkl", "rb") as f:
+with open("priority_model.pkl", "rb") as f:
     loaded_pipeline = pickle.load(f)
 
 class Event:
@@ -52,8 +52,6 @@ class EventPriorityQueue:
                 pred = loaded_pipeline.predict(X)[0]
                 event.priority = int(round(pred))
                 print(f"Predicted priority for flexible event '{event.event_name}': {event.priority}")
-            else:
-                print(f"Using provided priority for flexible event '{event.event_name}': {event.priority}")
 
             # Pushing flexible event into priority queue
             heapq.heappush(self._heap, (event.priority, self._counter, event))
@@ -90,9 +88,9 @@ if __name__ == "__main__":
     queue = EventPriorityQueue()
 
     inputs = [
-        {"event_name": "Task A", "deadline": "2025-05-25T12:00:00", "duration": 2},
-        {"event_name": "Meeting B", "start_time": "2025-05-23T09:00:00", "end_time": "2025-05-23T10:00:00"},
-        {"event_name": "Task C", "deadline": "2025-05-26T18:00:00", "duration": 1, "priority": 1},
+        {"event_name": "Task A", "deadline": "2025-05-27T12:00:00", "duration": 2},
+        {"event_name": "Meeting B", "start_time": "2025-05-23T09:00:00", "end_time": "2025-05-28T10:00:00"},
+        {"event_name": "Task C", "deadline": "2025-05-30T18:00:00", "duration": 1, "priority": 1},
     ]
 
     for inp in inputs:
@@ -104,6 +102,6 @@ if __name__ == "__main__":
     # print(queue.get_all_events())
 
     # print("\nDequeuing flexible events in priority order:")
-    while len(queue) > 0:
-        evt = queue.pop_event()
-        print(evt)
+    # while len(queue) > 0:
+    #     evt = queue.pop_event()
+    #     print(evt)

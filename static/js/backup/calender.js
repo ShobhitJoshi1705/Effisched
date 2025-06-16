@@ -35,6 +35,7 @@ const months = [
 ];
 
 const eventsArr = [];
+const flexibletaskArr = [];
 getEvents();
 
 // Toggle fields based on event type
@@ -214,8 +215,7 @@ function updateEvents(date) {
         ) {
             event.events.forEach((event) => {
                 if(event.type!=="flexible")
-                {
-                    events += `<div class="event">
+                {events += `<div class="event">
                     <div class="title">
                         <i class="fas fa-circle"></i>
                         <h3 class="event-title">${event.title}</h3>
@@ -223,8 +223,7 @@ function updateEvents(date) {
                     <div class="event-time">
                         <span class="event-time">${event.time}</span>
                     </div>
-                </div>`;
-            }
+                </div>`;}
                 // else {
                 //     events += `<div class="event">
                 //     <div class="title">
@@ -416,6 +415,7 @@ addEventSubmit.addEventListener("click", () => {
         addTaskTitle.value = "";
         addEventTo.value="";
         addEventFrom.value="";
+        flexibletaskArr.push(eventData);
     }
     fetch("/add-event", {
         method: "POST",
@@ -481,16 +481,7 @@ function updateFlexibleTasks() {
       return response.json();
     })
     .then(data => {
-      const flexibleTasks = data.filter(evt => evt.type === "flexible"&&evt.day>=activeDay);
-      const seen = new Set();
-        const uniqueFlexibleTasks = flexibleTasks.filter(task => {
-        if (seen.has(task.title)) {
-        return false;
-        }
-  seen.add(task.title);
-  return true;
-});
-
+      const flexibleTasks = data.filter(evt => evt.type === "flexible");
       let tasksHtml = '';
       flexibleTasks.forEach(task => {
         tasksHtml += `
@@ -510,6 +501,9 @@ function updateFlexibleTasks() {
           </div>`;
       });
 
+      // 3. Inject into DOM
+      eventsContainer.innerHTML += tasksHtml;
+
       // 4. Deduplicate into your local array
       flexibleTasks.forEach(evt => {
         const exists = eventsArr.some(e =>
@@ -519,9 +513,7 @@ function updateFlexibleTasks() {
           e.title    === evt.title &&
           e.type     === evt.type
         );
-        if (!exists) {
-        // eventsArr.push(evt);
-            eventsContainer.innerHTML += tasksHtml;}
+        if (!exists) eventsArr.push(evt);
       });
 
       console.log("Flexible tasks loaded:", flexibleTasks);
@@ -533,12 +525,12 @@ function updateFlexibleTasks() {
 
 
 function saveEvents() {
-    localStorage.setItem("fixedevents", JSON.stringify(eventsArr));
+    localStorage.setItem("events", JSON.stringify(eventsArr));
 }
 
 function getEvents() {
-    if (localStorage.getItem("fixedevents") !== null) {
-        eventsArr.push(...JSON.parse(localStorage.getItem("fixedevents")));
+    if (localStorage.getItem("events") !== null) {
+        eventsArr.push(...JSON.parse(localStorage.getItem("events")));
     }
     updateFlexibleTasks();
     initCalendar();
