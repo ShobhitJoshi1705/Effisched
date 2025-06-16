@@ -445,94 +445,91 @@ addEventSubmit.addEventListener("click", () => {
         updateFlexibleTasks();
 });
 
-eventsContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("event")) {
-        if (confirm("Are you sure you want to delete this event?")) {
-            const eventTitle = e.target.children[0].children[1].innerHTML;
-            eventsArr.forEach((event) => {
-                if (
-                    event.day === activeDay &&
-                    event.month === month + 1 &&
-                    event.year === year
-                ) {
-                    event.events.forEach((item, index) => {
-                        if (item.title === eventTitle) {
-                            event.events.splice(index, 1);
-                        }
-                    });
-                    if (event.events.length === 0) {
-                        eventsArr.splice(eventsArr.indexOf(event), 1);
-                        const activeDayEl = document.querySelector(".day.active");
-                        if (activeDayEl.classList.contains("event")) {
-                            activeDayEl.classList.remove("event");
-                        }
-                    }
-                }
-            });
-            updateEvents(activeDay);
-        }
-    }
-});
-
 function updateFlexibleTasks() {
-  fetch('/get-events')
+    fetch('/get-events')
     .then(response => {
-      if (!response.ok) throw new Error(`Server returned ${response.status}`);
-      return response.json();
+        if (!response.ok) throw new Error(`Server returned ${response.status}`);
+        return response.json();
     })
     .then(data => {
-      const flexibleTasks = data.filter(evt => evt.type === "flexible"&&evt.day>=activeDay);
-      const seen = new Set();
+        const flexibleTasks = data.filter(evt => evt.type === "flexible"&&evt.day>=activeDay);
+        const seen = new Set();
         const uniqueFlexibleTasks = flexibleTasks.filter(task => {
-        if (seen.has(task.title)) {
-        return false;
-        }
-  seen.add(task.title);
-  return true;
-});
-
-      let tasksHtml = '';
-      flexibleTasks.forEach(task => {
-        tasksHtml += `
-          <div class="event">
+            if (seen.has(task.title)) {
+                return false;
+            }
+            seen.add(task.title);
+            return true;
+        });
+        
+        let tasksHtml = '';
+        flexibleTasks.forEach(task => {
+            tasksHtml += `
+            <div class="event">
             <div class="title">
-              <i class="fas fa-circle"></i>
-              <h3 class="event-title">${task.title}</h3>
+            <i class="fas fa-circle"></i>
+            <h3 class="event-title">${task.title}</h3>
             </div>
             <div class="event-time">
-              <span>Deadline: ${task.deadline}</span>
-              <span>Duration: ${task.duration.toFixed(2)}h</span>
-              <span>Priority :${task.priority}</span>
+            <span>Deadline: ${task.deadline}</span>
+            <span>Duration: ${task.duration.toFixed(2)}h</span>
+            <span>Priority :${task.priority}</span>
             </div>
             <div class="event-date">
-              ${task.day}/${task.month}/${task.year}
+            ${task.day}/${task.month}/${task.year}
             </div>
-          </div>`;
-      });
-
-      // 4. Deduplicate into your local array
-      flexibleTasks.forEach(evt => {
-        const exists = eventsArr.some(e =>
-          e.day      === evt.day &&
-          e.month    === evt.month &&
-          e.year     === evt.year &&
-          e.title    === evt.title &&
-          e.type     === evt.type
-        );
-        if (!exists) {
-        // eventsArr.push(evt);
-            eventsContainer.innerHTML += tasksHtml;}
-      });
-
-      console.log("Flexible tasks loaded:", flexibleTasks);
-      console.log("eventsArr after update:", eventsArr);
-    })
-    .catch(error => console.error("Error fetching tasks:", error));
-    initCalendar();
-}
-
-
-function saveEvents() {
+            </div>`;
+        });
+        
+        // 4. Deduplicate into your local array
+        flexibleTasks.forEach(evt => {
+            const exists = eventsArr.some(e =>
+                e.day      === evt.day &&
+                e.month    === evt.month &&
+                e.year     === evt.year &&
+                e.title    === evt.title &&
+                e.type     === evt.type
+            );
+            if (!exists) {
+                // eventsArr.push(evt);
+                eventsContainer.innerHTML += tasksHtml;}
+            });
+            
+            console.log("Flexible tasks loaded:", flexibleTasks);
+            console.log("eventsArr after update:", eventsArr);
+        })
+        .catch(error => console.error("Error fetching tasks:", error));
+        initCalendar();
+    } 
+    eventsContainer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("event")) {
+            if (confirm("Are you sure you want to delete this event?")) {
+                const eventTitle = e.target.children[0].children[1].innerHTML;
+                eventsArr.forEach((event) => {
+                    if (
+                        event.day === activeDay &&
+                        event.month === month + 1 &&
+                        event.year === year
+                    ) {
+                        event.events.forEach((item, index) => {
+                            if (item.title === eventTitle) {
+                                event.events.splice(index, 1);
+                            }
+                        });
+                        if (event.events.length === 0) {
+                            eventsArr.splice(eventsArr.indexOf(event), 1);
+                            const activeDayEl = document.querySelector(".day.active");
+                            if (activeDayEl.classList.contains("event")) {
+                                activeDayEl.classList.remove("event");
+                            }
+                        }
+                    }
+                });
+                updateEvents(activeDay);
+            }
+        }
+    });
+    function saveEvents() {
     localStorage.setItem("fixedevents", JSON.stringify(eventsArr));
 }
 
