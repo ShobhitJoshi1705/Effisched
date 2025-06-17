@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #ea7bba;
-    --primary-color-dark: #d16ca3;
+    --primary-color: #4a5568;
+    --primary-color-dark: #4a5568;
 }
 
 body {
@@ -79,5 +79,5 @@ body {
 }
 
 .left a {
-    color: #ea7bba !important;
+    color:#4a5568 !important;
 }
