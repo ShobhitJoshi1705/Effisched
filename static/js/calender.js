@@ -9,6 +9,7 @@ const calendar = document.querySelector(".calendar"),
     eventDay = document.querySelector(".event-day"),
     eventDate = document.querySelector(".event-date"),
     eventsContainer = document.querySelector(".events"),
+    flexibleeventsContainer=document.querySelector('.flexibleevents'),
     addEventBtn = document.querySelector(".add-event"),
     addEventWrapper = document.querySelector(".add-event-wrapper"),
     addEventCloseBtn = document.querySelector(".close"),
@@ -426,15 +427,6 @@ addEventSubmit.addEventListener("click", () => {
         .then(data => {
             if (data.status === "success") {
                 alert("success sending data to backend");
-                // const list = Array.isArray(data) ? data :(Array.isArray(data.events) ? data.events : []);
-                // // now safely append
-                // list.forEach(ev => eventsArr.push(ev));
-                // eventsArr.push(...JSON.parse(data));
-                // console.log("DATA:",data);
-                // console.log(eventsArr);
-                // saveEvents();
-                // initCalendar();
-                // updateEvents(activeDay);
                 updateFlexibleTasks();
             } else {
                 alert("Failed to add event/task" ,(data.message));
@@ -442,7 +434,6 @@ addEventSubmit.addEventListener("click", () => {
             }
         })
         .catch(error => console.error("Error:", error));
-        updateFlexibleTasks();
 });
 
 function updateFlexibleTasks() {
@@ -452,7 +443,8 @@ function updateFlexibleTasks() {
         return response.json();
     })
     .then(data => {
-        const flexibleTasks = data.filter(evt => evt.type === "flexible"&&evt.day>=activeDay);
+        const flexibleTasks = data.filter(evt => evt.type === "flexible"
+            &&(evt.day>= activeDay&&evt.month>=month&&evt.year>=year));
         const seen = new Set();
         const uniqueFlexibleTasks = flexibleTasks.filter(task => {
             if (seen.has(task.title)) {
@@ -461,7 +453,6 @@ function updateFlexibleTasks() {
             seen.add(task.title);
             return true;
         });
-        
         let tasksHtml = '';
         flexibleTasks.forEach(task => {
             tasksHtml += `
@@ -492,7 +483,7 @@ function updateFlexibleTasks() {
             );
             if (!exists) {
                 // eventsArr.push(evt);
-                eventsContainer.innerHTML += tasksHtml;}
+                flexibleeventsContainer.innerHTML = tasksHtml;}
             });
             
             console.log("Flexible tasks loaded:", flexibleTasks);
@@ -502,6 +493,34 @@ function updateFlexibleTasks() {
         initCalendar();
     } 
     eventsContainer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("event")) {
+            if (confirm("Are you sure you want to delete this event?")) {
+                const eventTitle = e.target.children[0].children[1].innerHTML;
+                eventsArr.forEach((event) => {
+                    if (
+                        event.day === activeDay &&
+                        event.month === month + 1 &&
+                        event.year === year
+                    ) {
+                        event.events.forEach((item, index) => {
+                            if (item.title === eventTitle) {
+                                event.events.splice(index, 1);
+                            }
+                        });
+                        if (event.events.length === 0) {
+                            eventsArr.splice(eventsArr.indexOf(event), 1);
+                            const activeDayEl = document.querySelector(".day.active");
+                            if (activeDayEl.classList.contains("event")) {
+                                activeDayEl.classList.remove("event");
+                            }
+                        }
+                    }
+                });
+                updateEvents(activeDay);
+            }
+        }
+    });
+    flexibleeventsContainer.addEventListener("click", (e) => {
         if (e.target.classList.contains("event")) {
             if (confirm("Are you sure you want to delete this event?")) {
                 const eventTitle = e.target.children[0].children[1].innerHTML;
