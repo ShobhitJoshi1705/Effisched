@@ -60,7 +60,6 @@ def loadEventsFromDatabase():
             'year': row[6],
             'priority': row[7]
         }
-        print(event)
         if event not in EventsList:
             EventsList.append(event)
         print("Events after loading db :",EventsList)
@@ -203,10 +202,9 @@ def add_event():
         if event not in EventsList:
             EventsList.append(event)
             savetoDatabase(event)
-            print("apend successful")
-            print("EventsList AFTER APPEND :",EventsList)
+            print("\nEventsList AFTER APPEND :\n",EventsList)
         else:
-            print("apend unsucessful")
+            print("Append unsucessful")
     else:
         return jsonify({"status": "error", "message": "Invalid event type"}), 400
 
@@ -217,7 +215,7 @@ def add_event():
 def get_events():
     if loadEventsFromDatabase():
         print("\nevents loaded\n")
-        print("Events in backend:",EventsList)
+        print("\nEvents in backend at get request : \n",EventsList)
     return jsonify(EventsList)
 
 # @app.route('/save-events', methods=['POST'])
