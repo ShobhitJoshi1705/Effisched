@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Time Allocator</title>
+  <style>
+    :root {
+      --primary-color: #4a5568;
+      --secondary-color: #2d3748;
+      --accent-color: #3182ce;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --bg-primary: #f7fafc;
+      --bg-secondary: #ffffff;
+      --border-color: #e2e8f0;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --neutral-50: #f9fafb;
+      --neutral-100: #f3f4f6;
+      --neutral-200: #e5e7eb;
+      --neutral-300: #d1d5db;
+      --neutral-400: #9ca3af;
+      --neutral-500: #6b7280;
+      --neutral-600: #4b5563;
+      --neutral-700: #374151;
+      --neutral-800: #1f2937;
+      --neutral-900: #111827;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: var(--text-primary);
+    }
+
+    #taskContainer {
+      display: none;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      width: 320px;
+      text-align: center;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    h2 {
+      color: var(--primary-color);
+      margin-bottom: 16px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      padding: 10px;
+      border-bottom: 1px solid var(--neutral-200);
+      color: var(--text-secondary);
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color:#1a202c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--neutral-700);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="taskContainer">
+    <h2>Today's Tasks</h2>
+    <ul id="taskList">
+    </ul>
+  </div>
+
+  <button onclick="fetchTasks()">Show Tasks</button>
+
+  <script>
+    async function fetchTasks() {
+      const container = document.getElementById("taskContainer");
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      try {
+        fetch('/get-allocated-time').then(
+            response=>{
+                if(!response.ok) throw new Error('error in fetching ${response.status}');
+                return response.text();
+            }
+        )
+        .then( data=>{
+            const tasks = data.split(';');
+        
+
+        tasks.forEach(task => {
+          const li = document.createElement("li");
+          li.textContent = task;
+          list.appendChild(li);
+        });
+
+        container.style.display = "block";
+    });
+      } catch (error) {
+        list.innerHTML = `<li>Error loading tasks</li>`;
+        console.log('rrror :${error.message}');
+        container.style.display = "block";
+      }
+    }
+  </script>
+
+</body>
+</html>
