@@ -398,7 +398,13 @@ addEventSubmit.addEventListener("click", () => {
         const taskTitle = addTaskTitle.value;
         // const taskDeadline = addTaskDeadline.value;
         // const taskDuration = addTaskDuration.value;
+        let current= new Date();
+
+        const hour=current.getHours();
+        const min=current.getMinutes();
+
         const taskDeadline=timeToMinutes(addEventTo.value);
+        // const taskDeadline=timeToMinutes(addEventTo.value)-(hour*60+min);
         const taskDuration=Math.abs(timeToMinutes(addEventTo.value)-timeToMinutes(addEventFrom.value));
         if (isNaN(taskDuration) || taskDuration <= 0) {
             alert("Duration must be a positive number");
