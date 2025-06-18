@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS events (
     priority INTEGER
 )
 ''')
-# Load model
 with open("ml_model\\priority_model.pkl", "rb") as f:
     priority_model = pickle.load(f)
 
@@ -66,7 +65,6 @@ def loadEventsFromDatabase():
         con.close()
             
 def savetoDatabase(new_event):
-    # Check if the event already exists
     con=get_db_connection()
     cur=con.cursor()
     cur.execute('''
@@ -129,7 +127,9 @@ def home():
 @app.route('/login.html')
 def login():
     return render_template('login.html')
-
+@app.route('/timeallocator.html')
+def timeAllocator():
+    return render_template('timeallocator.html')
 @app.route('/welcome.html')
 def welcome():
     return render_template('welcome.html')
@@ -142,6 +142,9 @@ def afterlog():
 def calender():
     return render_template('calender.html')
 
+@app.route('/get-allocated-time')
+def gettime():
+    return ("server Response")
 @app.route('/add-event', methods=['POST'])
 def add_event():
     data = request.get_json()
@@ -163,17 +166,15 @@ def add_event():
     
     elif event_type == "flexible":
         title        = data.get('title')
-        raw_deadline = data.get('deadline')    # now an int: minutes past midnight
+        raw_deadline = data.get('deadline') 
         duration     = float(data.get('duration'))
         eventday=data.get('day')
         
-        # --- NEW: convert int→datetime at today’s date midnight + minutes ---
         from datetime import time, timedelta
         today_midnight = datetime.combine(datetime.now().date(), time())
         deadline_dt    = today_midnight + timedelta(minutes=raw_deadline)
         
 
-        # now you can safely subtract
         hours_remaining = (deadline_dt - datetime.now()).total_seconds() / 3600
         hours_remaining = max(1, hours_remaining)
         time_pressure   = duration / hours_remaining
