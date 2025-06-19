@@ -204,7 +204,7 @@ function getActiveDay(date) {
     eventDay.innerHTML = dayName;
     eventDate.innerHTML = date + " " + months[month] + " " + year;
 }
-//to change
+//events ko update
 function updateEvents(date) {
     let events = "";
     eventsArr.forEach((event) => {
@@ -293,6 +293,7 @@ addEventTo.addEventListener("input", (e) => {
 // addTaskDuration.addEventListener("input", (e) => {
 //     addTaskDuration.value = addTaskDuration.value.replace(/[^0-9.]/g, "");
 // });
+
 function timeToMinutes(t) {
   const [hh, mm] = t.split(':').map(Number);
   return hh * 60 + mm;
@@ -398,10 +399,10 @@ addEventSubmit.addEventListener("click", () => {
         const taskTitle = addTaskTitle.value;
         // const taskDeadline = addTaskDeadline.value;
         // const taskDuration = addTaskDuration.value;
-        let current= new Date();
+        // let current= new Date();
 
-        const hour=current.getHours();
-        const min=current.getMinutes();
+        // const hour=current.getHours();
+        // const min=current.getMinutes();
 
         const taskDeadline=timeToMinutes(addEventTo.value);
         // const taskDeadline=timeToMinutes(addEventTo.value)-(hour*60+min);
@@ -441,7 +442,7 @@ addEventSubmit.addEventListener("click", () => {
         })
         .catch(error => console.error("Error:", error));
 });
-
+//felxible tasks ko update kar raha hai
 function updateFlexibleTasks() {
     fetch('/get-events')
     .then(response => {
